@@ -26,7 +26,7 @@ class BasePanel(ScreenPanel):
         abscale = self.bts * 1.1
         self.control['back'] = self._gtk.Button('back', scale=abscale)
         self.control['back'].connect("clicked", self.back)
-        self.control['home'] = self._gtk.Button('main', scale=abscale)
+        self.control['home'] = self._gtk.Button('home', scale=abscale)
         self.control['home'].connect("clicked", self._screen._menu_go_back, True)
         self.control['estop'] = self._gtk.Button('emergency', scale=abscale)
         self.control['estop'].connect("clicked", self.emergency_stop)
@@ -37,9 +37,9 @@ class BasePanel(ScreenPanel):
         self.control['printer_select'].set_no_show_all(True)
 
         self.shorcut = {
-            "name": "Macros",
-            "panel": "gcode_macros",
-            "icon": "custom-script",
+            "name": "Console",
+            "panel": "console",
+            "icon": "console",
         }
         self.control['shortcut'] = self._gtk.Button(self.shorcut['icon'], scale=abscale)
         self.control['shortcut'].connect("clicked", self.menu_item_clicked, self.shorcut)

@@ -50,6 +50,9 @@ class Panel(ScreenPanel):
         if "PROBE_CALIBRATE" in self._printer.available_commands:
             self._add_button("Probe", "probe", pobox)
             functions.append("probe")
+        if "IDM_CALIBRATE" in self._printer.available_commands:
+            self._add_button("IDM", "idm", pobox)
+            functions.append("idm")
         if "BED_MESH_CALIBRATE" in self._printer.available_commands and "probe" not in functions:
             # This is used to do a manual bed mesh if there is no probe
             self._add_button("Bed mesh", "mesh", pobox)
@@ -133,6 +136,8 @@ class Panel(ScreenPanel):
             self._screen._ws.klippy.gcode_script("PROBE_CALIBRATE")
         elif method == "mesh":
             self._screen._ws.klippy.gcode_script("BED_MESH_CALIBRATE")
+        elif method == "idm":
+            self._screen._ws.klippy.gcode_script("IDM_CALIBRATE")
         elif method == "delta":
             self._screen._ws.klippy.gcode_script("DELTA_CALIBRATE")
         elif method == "delta_manual":
