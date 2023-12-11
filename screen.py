@@ -222,6 +222,12 @@ class KlipperScreen(Gtk.Window):
 
         self.files = KlippyFiles(self)
         self._ws.initial_connect()
+    
+    def set_autoshutdown(self):
+         if self._config.get_config()['main'].getboolean(f"autoshutdown", True):
+              self._screen._ws.klippy.gcode_script("SET_COMPLETE_SHUTDOWN")
+            
+
 
     def ws_subscribe(self):
         requested_updates = {
@@ -676,6 +682,7 @@ class KlipperScreen(Gtk.Window):
             self.printer.state = "not ready"
             return
         self.show_panel("main_menu", None, remove_all=True, items=self._config.get_menu_items("__main"))
+       
 
     def state_startup(self):
         self.printer_initializing(_("Klipper is attempting to start"))

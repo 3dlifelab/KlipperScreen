@@ -36,12 +36,6 @@ class Panel(ScreenPanel):
         self.refresh.connect("clicked", self.refresh_updates)
         self.refresh.set_vexpand(False)
 
-        reboot = self._gtk.Button('refresh', _('Restart'), 'color3')
-        reboot.connect("clicked", self.reboot_poweroff, "reboot")
-        reboot.set_vexpand(False)
-        shutdown = self._gtk.Button('shutdown', _('Shutdown'), 'color4')
-        shutdown.connect("clicked", self.reboot_poweroff, "poweroff")
-        shutdown.set_vexpand(False)
 
         scroll = self._gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -84,8 +78,6 @@ class Panel(ScreenPanel):
         grid.attach(scroll, 0, 0, 4, 2)
         grid.attach(update_all, 0, 2, 1, 1)
         grid.attach(self.refresh, 1, 2, 1, 1)
-        grid.attach(reboot, 2, 2, 1, 1)
-        grid.attach(shutdown, 3, 2, 1, 1)
         self.content.add(grid)
 
     def activate(self):
@@ -307,38 +299,4 @@ class Panel(ScreenPanel):
         self.labels[f"{p}_status"].get_style_context().add_class('update')
         self.labels[f"{p}_status"].set_sensitive(True)
 
-    def reboot_poweroff(self, widget, method):
-        scroll = self._gtk.ScrolledWindow()
-        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        vbox.set_halign(Gtk.Align.CENTER)
-        vbox.set_valign(Gtk.Align.CENTER)
-        if method == "reboot":
-            label = Gtk.Label(label=_("Are you sure you wish to reboot the system?"))
-        else:
-            label = Gtk.Label(label=_("Are you sure you wish to shutdown the system?"))
-        vbox.add(label)
-        scroll.add(vbox)
-        buttons = [
-            {"name": _("Host"), "response": Gtk.ResponseType.OK},
-            {"name": _("Printer"), "response": Gtk.ResponseType.APPLY},
-            {"name": _("Cancel"), "response": Gtk.ResponseType.CANCEL}
-        ]
-        dialog = self._gtk.Dialog(self._screen, buttons, scroll, self.reboot_poweroff_confirm, method)
-        if method == "reboot":
-            dialog.set_title(_("Restart"))
-        else:
-            dialog.set_title(_("Shutdown"))
-
-    def reboot_poweroff_confirm(self, dialog, response_id, method):
-        self._gtk.remove_dialog(dialog)
-        if response_id == Gtk.ResponseType.OK:
-            if method == "reboot":
-                os.system("systemctl reboot -i")
-            else:
-                os.system("systemctl poweroff -i")
-        elif response_id == Gtk.ResponseType.APPLY:
-            if method == "reboot":
-                self._screen._ws.send_method("machine.reboot")
-            else:
-                self._screen._ws.send_method("machine.shutdown")
+   

@@ -15,7 +15,7 @@ class Panel(ScreenPanel):
         super().__init__(screen, title)
         self.show_add = False
         self.networks = {}
-        self.interface = None
+        self.interface = 'wlan0'
         self.prev_network = None
         self.update_timeout = None
         self.network_interfaces = netifaces.interfaces()
