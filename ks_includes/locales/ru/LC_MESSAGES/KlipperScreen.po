@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: KlipperScreen\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:20-0300\n"
-"PO-Revision-Date: 2023-08-16 09:53-0300\n"
+"PO-Revision-Date: 2024-01-12 09:22+0300\n"
 "Last-Translator: Jakob Kais <schpuntik@freenet.de>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.4.1\n"
 "X-Poedit-Flags-xgettext: --add-comments\n"
 
 #, python-format
@@ -149,11 +149,11 @@ msgid "Confirm Emergency Stop"
 msgstr "Подтвердить аварийную остановку"
 
 msgid "Connected"
-msgstr "Соединенный"
+msgstr "Подключен"
 
 #, python-format
 msgid "Connecting to %s"
-msgstr "Соединенный с  %s"
+msgstr "Подключен к  %s"
 
 msgid "Console"
 msgstr "Консоль"
@@ -205,7 +205,7 @@ msgid "Extra Large"
 msgstr "Очень большой"
 
 msgid "Extrude"
-msgstr "Заправить"
+msgstr "Протянуть"
 
 msgid "Extrusion +"
 msgstr "Экструзия +"
@@ -226,7 +226,7 @@ msgid "Filament total:"
 msgstr "Итого филамента:"
 
 msgid "Filament used:"
-msgstr "Использование филамента:"
+msgstr "Филамента израсходовано:"
 
 msgid "Filament:"
 msgstr "Филамент:"
@@ -337,7 +337,7 @@ msgid "It may take more than 5 minutes depending on the heater power."
 msgstr "В зависимости от мощности нагревателя это может занять более 5 минут."
 
 msgid "Klipper Restart"
-msgstr "Klipper Рестарт"
+msgstr "Перезагрузка Klipper"
 
 msgid "Klipper has disconnected"
 msgstr "Нет связи с Klipper"
@@ -373,7 +373,7 @@ msgid "Limits"
 msgstr "Лимиты"
 
 msgid "Load"
-msgstr "Загрузить"
+msgstr "Заправить"
 
 msgid "Lower Nozzle"
 msgstr "Опустить сопло"
@@ -561,7 +561,7 @@ msgid "Resume"
 msgstr "Продолжить"
 
 msgid "Retract"
-msgstr "Втянуть"
+msgstr "Вытянуть"
 
 msgid "Retraction"
 msgstr "Ретракт"
@@ -694,7 +694,7 @@ msgid "Unknown screw position"
 msgstr "Неизвестное положение винта"
 
 msgid "Unload"
-msgstr "Загружено"
+msgstr "Выгрузить"
 
 msgid "Unretract Extra Length"
 msgstr "Дополнительная длина подачи перед возобновлением печати"
