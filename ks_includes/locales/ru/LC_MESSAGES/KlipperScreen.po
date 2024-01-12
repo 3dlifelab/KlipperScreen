@@ -213,6 +213,9 @@ msgstr "Экструзия +"
 msgid "Extrusion -"
 msgstr "Экструзия -"
 
+msgid "Extruder"
+msgstr "Экструдер"
+
 msgid "Failed, adjust position first"
 msgstr "Ошибка. Сначала измените положение"
 
