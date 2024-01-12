@@ -20,8 +20,8 @@ class Panel(ScreenPanel):
             'x-': self._gtk.Button("arrow-left", "X-", "color1"),
             'y+': self._gtk.Button("arrow-up", "Y+", "color2"),
             'y-': self._gtk.Button("arrow-down", "Y-", "color2"),
-            'z+': self._gtk.Button("arrow-up", "Z+", "color3"),
-            'z-': self._gtk.Button("arrow-down", "Z-", "color3"),
+            'z+': self._gtk.Button("arrow-up", "Z-", "color3"),
+            'z-': self._gtk.Button("arrow-down", "Z+", "color3"),
             'home': self._gtk.Button("home", _("Home"), "color4"),
             'motors_off': self._gtk.Button("motor-off", _("Disable Motors"), "color4"),
         }
