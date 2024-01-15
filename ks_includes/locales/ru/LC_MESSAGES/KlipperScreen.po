@@ -124,6 +124,9 @@ msgstr "Отменено"
 msgid "Cancelling"
 msgstr "Отменить"
 
+msgid "Chamber Fan"
+msgstr "Объемный обдув модели"
+
 msgid "Cannot connect to Moonraker"
 msgstr "Не удается подключиться к Moonraker"
 
