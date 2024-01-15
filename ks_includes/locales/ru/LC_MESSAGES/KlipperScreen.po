@@ -267,6 +267,9 @@ msgstr "Полный Обновлять"
 msgid "Go Back"
 msgstr "Назад"
 
+msgid "Heater Bed:"
+msgstr "Стол"
+
 msgid "Height:"
 msgstr "Высота:"
 
