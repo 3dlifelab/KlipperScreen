@@ -154,9 +154,9 @@ class KlipperScreenConfig:
             bools = strs = numbers = ()
             if section == 'main':
                 bools = (
-                    'invert_x', 'invert_y', 'invert_z', '24htime', 'only_heaters', 'show_cursor', 'confirm_estop',
+                    'invert_x', 'invert_y', 'invert_z', 'only_heaters', 'show_cursor', 'confirm_estop',
                     'autoclose_popups', 'use_dpms', 'use_default_menu', 'side_macro_shortcut', 'use-matchbox-keyboard',
-                    'show_heater_power', "show_scroll_steppers","autoshutdown"
+                    'show_heater_power', "show_scroll_steppers"
                 )
                 strs = (
                     'default_printer', 'language', 'print_sort_dir', 'theme', 'screen_blanking', 'font_size',
@@ -258,7 +258,6 @@ class KlipperScreenConfig:
                 "value": "3600", "callback": screen.set_screenblanking_timeout, "options": [
                     {"name": _("Never"), "value": "off"}]
             }},
-            {"24htime": {"section": "main", "name": _("24 Hour Time"), "type": "binary", "value": "True"}},
             {"side_macro_shortcut": {
                 "section": "main", "name": _("Macro shortcut on sidebar"), "type": "binary",
                 "value": "True", "callback": screen.toggle_shortcut}},
@@ -282,8 +281,6 @@ class KlipperScreenConfig:
                                    "value": "False", "callback": screen.reload_panels}},
             {"show_scroll_steppers": {"section": "main", "name": _("Show Scrollbars Buttons"), "type": "binary",
                                       "value": "False", "callback": screen.reload_panels}},
-            {"autoshutdown": {"section": "main", "name": _("Autoshutdown"), "type": "binary",
-                                      "value": "False", "callback": screen.set_autoshutdown}},
             # {"": {"section": "main", "name": _(""), "type": ""}}
         ]
 

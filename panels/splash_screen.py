@@ -28,8 +28,8 @@ class Panel(ScreenPanel):
         self.labels['restart_system'].connect("clicked", self.restart_system)
         self.labels['shutdown'] = self._gtk.Button("shutdown", _('System Shutdown'), "color2")
         self.labels['shutdown'].connect("clicked", self.shutdown)
-        self.labels['retry'] = self._gtk.Button("load", _('Retry'), "color3")
-        self.labels['retry'].connect("clicked", self.retry)
+        #self.labels['retry'] = self._gtk.Button("load", _('Retry'), "color3")
+        #self.labels['retry'].connect("clicked", self.retry)
 
         self.labels['actions'] = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.labels['actions'].set_hexpand(True)
@@ -79,8 +79,8 @@ class Panel(ScreenPanel):
             self.labels['actions'].add(self.labels['restart_system'])
             self.labels['actions'].add(self.labels['shutdown'])
         self.labels['actions'].add(self.labels['menu'])
-        if self._screen._ws and not self._screen._ws.connecting or self._screen.reinit_count > self._screen.max_retries:
-            self.labels['actions'].add(self.labels['retry'])
+        #if self._screen._ws and not self._screen._ws.connecting or self._screen.reinit_count > self._screen.max_retries:
+           # self.labels['actions'].add(self.labels['retry'])
         self.labels['actions'].show_all()
 
     def add_power_button(self, powerdevs):
@@ -104,8 +104,14 @@ class Panel(ScreenPanel):
                         self.labels['power'].set_sensitive(False)
 
     def firmware_restart(self, widget):
-        self._screen._ws.klippy.restart_firmware()
-
+        if self._screen._ws.connected:
+            self._screen._confirm_send_action(widget,
+                                              _("Are you sure you wish to reboot the system?"),
+                                              "machine.reboot")
+        else:
+            logging.info("OS Reboot")
+            os.system("systemctl reboot -i")
+            
     def restart(self, widget):
         self._screen._ws.klippy.restart()
 

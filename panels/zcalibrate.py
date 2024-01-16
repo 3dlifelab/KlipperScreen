@@ -51,11 +51,11 @@ class Panel(ScreenPanel):
             self._add_button("Probe", "probe", pobox)
             functions.append("probe")
         if "IDM_CALIBRATE" in self._printer.available_commands:
-            self._add_button("IDM", "idm", pobox)
+            self._add_button(_("IDM"), "idm", pobox)
             functions.append("idm")
         if "BED_MESH_CALIBRATE" in self._printer.available_commands and "probe" not in functions:
             # This is used to do a manual bed mesh if there is no probe
-            self._add_button("Bed mesh", "mesh", pobox)
+            self._add_button(_("Bed Mesh"), "mesh", pobox)
             functions.append("mesh")
         if "DELTA_CALIBRATE" in self._printer.available_commands:
             if "probe" in functions:

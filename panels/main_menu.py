@@ -102,9 +102,10 @@ class Panel(MenuPanel):
                 image = "extruder"
             class_name = f"graph_label_{device}"
             dev_type = "extruder"
+            devname = _("Extruder")
         elif device == "heater_bed":
             image = "bed"
-            devname = "Heater Bed"
+            devname = _("Heater Bed")
             class_name = "graph_label_heater_bed"
             dev_type = "bed"
         elif device.startswith("heater_generic"):
