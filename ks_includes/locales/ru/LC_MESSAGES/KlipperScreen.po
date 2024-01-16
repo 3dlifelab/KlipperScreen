@@ -7,15 +7,14 @@ msgstr ""
 "Project-Id-Version: KlipperScreen\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-16 10:20-0300\n"
-"PO-Revision-Date: 2024-01-15 17:20+0300\n"
+"PO-Revision-Date: 2024-01-16 16:02+0300\n"
 "Last-Translator: Jakob Kais <schpuntik@freenet.de>\n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Generator: Poedit 3.4.1\n"
 "X-Poedit-Flags-xgettext: --add-comments\n"
 
@@ -79,8 +78,11 @@ msgstr "Вы хотите выключить принтер?"
 msgid "Auto"
 msgstr "Авто"
 
+msgid "Auto Calibration"
+msgstr "Автокалибровка"
+
 msgid "Auto-calibrate"
-msgstr "Автоматическая калибровка"
+msgstr "Запустить автокалибровку"
 
 msgid "Auto-close notifications"
 msgstr "Автоматическое закрытие уведомлений"
@@ -166,6 +168,9 @@ msgstr "Подтвердить"
 
 msgid "Cooldown"
 msgstr "Остудить"
+
+msgid "Chamber Fan"
+msgstr "Объемный обдув модели"
 
 msgid "DPMS has failed to load and has been disabled"
 msgstr "DPMS не загрузилась и была отключена"
@@ -366,6 +371,9 @@ msgstr "Klipper перезагружается"
 msgid "KlipperScreen will reboot"
 msgstr "KlipperScreen перезагружается"
 
+msgid "IDM"
+msgstr "Ручная калибровка Z"
+
 msgid "Language"
 msgstr "Язык"
 
@@ -375,6 +383,15 @@ msgstr "Большой"
 msgid "Layer:"
 msgstr "Слой:"
 
+msgid "LED Manage"
+msgstr "Подсветка"
+
+msgid "LED Off"
+msgstr "Выключить свет"
+
+msgid "LED On"
+msgstr "Включить свет"
+
 msgid "Left:"
 msgstr "Осталось:"
 
@@ -382,7 +399,7 @@ msgid "Limits"
 msgstr "Лимиты"
 
 msgid "Load"
-msgstr "Загрузить"
+msgstr "Загрузить филамент"
 
 msgid "Lower Nozzle"
 msgstr "Опустить сопло"
@@ -395,6 +412,9 @@ msgstr "Макросы"
 
 msgid "Main Menu"
 msgstr "Главное меню"
+
+msgid "Manual Calibration"
+msgstr "Ручная калибровка"
 
 msgid "Max"
 msgstr "Максимум"
@@ -456,12 +476,11 @@ msgstr "Никогда"
 msgid "New"
 msgstr "Новый"
 
-msgid ""
-"Not supported for auto-detection, it needs to be configured in klipperscreen."
-"conf"
-msgstr ""
-"Не поддерживается для автоматического обнаружения, его необходимо настроить "
-"в klipperscreen.conf"
+msgid "Not supported for auto-detection, it needs to be configured in klipperscreen.conf"
+msgstr "Не поддерживается для автоматического обнаружения, его необходимо настроить в klipperscreen.conf"
+
+msgid "NOTE: Edit your printer.cfg to save manual calibration changes."
+msgstr "Примечание: <b>Для опытных пользователей.</b> Измените конфигурацию принтера (printer.cfg) для сохранения результатов ручной калибровки"
 
 msgid "Nothing selected"
 msgstr "Ничего не выбрано"
@@ -480,7 +499,7 @@ msgstr[1] "Пакеты будут обновляться"
 msgstr[2] "Пакеты будут обновляться"
 
 msgid "Part Fan"
-msgstr "Обдув_модели"
+msgstr "Обдув модели"
 
 msgid "Password saved"
 msgstr "Пароль сохранен"
@@ -586,6 +605,9 @@ msgstr "Повторить попытку"
 
 msgid "Retrying"
 msgstr "Повторная попытка"
+
+msgid "Reprint"
+msgstr "Перепечатать"
 
 msgid "Save"
 msgstr "Сохранить"
@@ -703,7 +725,7 @@ msgid "Unknown screw position"
 msgstr "Неизвестное положение винта"
 
 msgid "Unload"
-msgstr "Выгрузить"
+msgstr "Выгрузить филамент"
 
 msgid "Unretract Extra Length"
 msgstr "Дополнительная длина подачи перед возобновлением печати"
