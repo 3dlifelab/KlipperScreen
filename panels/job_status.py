@@ -162,7 +162,7 @@ class Panel(ScreenPanel):
         if self.current_extruder:
             for i, extruder in enumerate(self._printer.get_tools()):
                 self.labels[extruder] = Gtk.Label(label="-")
-                self.buttons['extruder'][extruder] = self._gtk.Button(f"extruder-{i}", "", None, self.bts,
+                self.buttons['extruder'][extruder] = self._gtk.Button(f"extruder", "", None, self.bts,
                                                                       Gtk.PositionType.LEFT, 1)
                 self.buttons['extruder'][extruder].set_label(self.labels[extruder].get_text())
                 self.buttons['extruder'][extruder].connect("clicked", self.menu_item_clicked,
@@ -283,11 +283,11 @@ class Panel(ScreenPanel):
         info.set_halign(Gtk.Align.START)
         info.get_style_context().add_class("printing-info-secondary")
         info.attach(goback, 0, 0, 1, 6)
+        info.attach(pos_box, 1, 2, 2, 1)
         info.attach(self.labels['speed_lbl'], 1, 0, 1, 1)
         info.attach(self.labels['req_speed'], 2, 0, 1, 1)
         info.attach(self.labels['accel_lbl'], 1, 1, 1, 1)
         info.attach(self.labels['max_accel'], 2, 1, 1, 1)
-        info.attach(pos_box, 1, 2, 2, 1)
         info.attach(self.labels['zoffset_lbl'], 1, 3, 1, 1)
         info.attach(self.labels['zoffset'], 2, 3, 1, 1)
         info.attach(self.labels['height_lbl'], 1, 4, 1, 1)

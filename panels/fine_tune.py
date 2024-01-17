@@ -75,8 +75,8 @@ class Panel(ScreenPanel):
         grid = self._gtk.HomogeneousGrid()
         grid.set_row_homogeneous(False)
 
-        self.labels['z+'] = self._gtk.Button("z-farther", "Z+", "color1")
-        self.labels['z-'] = self._gtk.Button("z-closer", "Z-", "color1")
+        self.labels['z+'] = self._gtk.Button("arrow-down", "Z+", "color1")
+        self.labels['z-'] = self._gtk.Button("arrow-up", "Z-", "color1")
         self.labels['zoffset'] = self._gtk.Button("refresh", '  0.00' + _("mm"),
                                                   "color1", self.bts, Gtk.PositionType.LEFT, 1)
         self.labels['speed+'] = self._gtk.Button("speed+", _("Speed +"), "color3")
@@ -89,8 +89,8 @@ class Panel(ScreenPanel):
         self.labels['extrudefactor'] = self._gtk.Button("refresh", "  100%",
                                                         "color4", self.bts, Gtk.PositionType.LEFT, 1)
         if self._screen.vertical_mode:
-            grid.attach(self.labels['z+'], 0, 0, 1, 1)
             grid.attach(self.labels['z-'], 1, 0, 1, 1)
+            grid.attach(self.labels['z+'], 0, 0, 1, 1)
             grid.attach(self.labels['zoffset'], 2, 0, 1, 1)
             grid.attach(zgrid, 0, 1, 3, 1)
             grid.attach(self.labels['speed-'], 0, 2, 1, 1)
@@ -103,8 +103,8 @@ class Panel(ScreenPanel):
             grid.attach(extgrid, 0, 5, 3, 1)
         else:
             grid.attach(self.labels['zoffset'], 0, 0, 1, 1)
-            grid.attach(self.labels['z+'], 0, 1, 1, 1)
-            grid.attach(self.labels['z-'], 0, 2, 1, 1)
+            grid.attach(self.labels['z-'], 0, 1, 1, 1)
+            grid.attach(self.labels['z+'], 0, 2, 1, 1)
             grid.attach(zgrid, 0, 3, 1, 1)
             grid.attach(self.labels['speedfactor'], 1, 0, 1, 1)
             grid.attach(self.labels['speed+'], 1, 1, 1, 1)
