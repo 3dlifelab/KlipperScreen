@@ -350,6 +350,9 @@ msgstr "Инвертировать движение по оси Z"
 msgid "It may take more than 5 minutes depending on the heater power."
 msgstr "В зависимости от мощности нагревателя это может занять более 5 минут."
 
+msgid "KlipperScreen"
+msgstr "Дисплей"
+
 msgid "Klipper Restart"
 msgstr "Перезагрузка Klipper"
 
@@ -629,7 +632,7 @@ msgid "Saved offset: %s"
 msgstr "Сохраненный офсет: %s"
 
 msgid "Screen DPMS"
-msgstr "Экран DPMS"
+msgstr "Отключение экрана при долгом простое"
 
 msgid "Screen Power Off Time"
 msgstr "Время выключения экрана"
@@ -654,6 +657,9 @@ msgstr "Показывать"
 
 msgid "Show Heater Power"
 msgstr "Показать мощность нагрева"
+
+msgid "Show Scrollbars Buttons"
+msgstr "Показать полосу прокрутки"
 
 msgid "Shutdown"
 msgstr "Выключить"
