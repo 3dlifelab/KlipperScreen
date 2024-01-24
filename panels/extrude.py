@@ -249,7 +249,7 @@ class Panel(ScreenPanel):
                 self._screen.show_popup_message("Macro UNLOAD_FILAMENT not found")
             else if self.current_extruder < 170:
                 self._screen.show_popup_message(_("Low temperature for move. Heat over 170 C"))
-            else
+            else:
                 self._screen._send_action(widget, "printer.gcode.script",
                                           {"script": f"UNLOAD_FILAMENT SPEED={self.speed * 60}"})
         if direction == "+":
