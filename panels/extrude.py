@@ -240,7 +240,7 @@ class Panel(ScreenPanel):
 
     def extrude(self, widget, direction):
         if self._printer.get_dev_stat("extruder", "temperature") < 170:
-                    self._screen.show_popup_message(_("Low extrusion temp. Please heat up"))
+                    self._screen.show_popup_message(_("Low temperature. Minimum extrusion temperature 170°С"))
         else:
             self._screen._ws.klippy.gcode_script(KlippyGcodes.EXTRUDE_REL)
             self._screen._send_action(widget, "printer.gcode.script",
@@ -252,7 +252,7 @@ class Panel(ScreenPanel):
                 self._screen.show_popup_message("Macro UNLOAD_FILAMENT not found")
             else:
                 if self._printer.get_dev_stat("extruder", "temperature") < 170:
-                    self._screen.show_popup_message(_("Low extrusion temp. Please heat up"))
+                    self._screen.show_popup_message(_("Low temperature. Minimum extrusion temperature 170°С"))
                 else:
                     self._screen._send_action(widget, "printer.gcode.script",
                                             {"script": f"UNLOAD_FILAMENT SPEED={self.speed * 60}"})
@@ -261,7 +261,7 @@ class Panel(ScreenPanel):
                 self._screen.show_popup_message("Macro LOAD_FILAMENT not found")
             else:
                 if self._printer.get_dev_stat("extruder", "temperature") < 170:
-                    self._screen.show_popup_message(_("Low extrusion temp. Please heat up"))
+                    self._screen.show_popup_message(_("Low temperature. Minimum extrusion temperature 170°С"))
                 else:
                     self._screen._send_action(widget, "printer.gcode.script",
                                           {"script": f"LOAD_FILAMENT SPEED={self.speed * 60}"})
