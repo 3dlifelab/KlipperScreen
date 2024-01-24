@@ -260,9 +260,9 @@ class Panel(ScreenPanel):
             if not self.load_filament:
                 self._screen.show_popup_message("Macro LOAD_FILAMENT not found")
             else:
-                 if self._printer.get_dev_stat("extruder", "temperature") < 170:
+                if self._printer.get_dev_stat("extruder", "temperature") < 170:
                     self._screen.show_popup_message(_("Low extrusion temp. Please heat up"))
-                else:     
+                else:
                     self._screen._send_action(widget, "printer.gcode.script",
                                           {"script": f"LOAD_FILAMENT SPEED={self.speed * 60}"})
 
