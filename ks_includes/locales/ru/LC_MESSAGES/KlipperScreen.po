@@ -404,6 +404,9 @@ msgstr "Лимиты"
 msgid "Load"
 msgstr "Загрузить филамент"
 
+msgid "Low temperature. Minimum extrusion temperature 170°С"
+msgstr "Низкая температура сопла. Минимальная температура экструзии 170°С"
+
 msgid "Lower Nozzle"
 msgstr "Опустить сопло"
 
