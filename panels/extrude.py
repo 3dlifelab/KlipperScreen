@@ -239,9 +239,12 @@ class Panel(ScreenPanel):
         self.speed = speed
 
     def extrude(self, widget, direction):
-        self._screen._ws.klippy.gcode_script(KlippyGcodes.EXTRUDE_REL)
-        self._screen._send_action(widget, "printer.gcode.script",
-                                  {"script": f"G1 E{direction}{self.distance} F{self.speed * 60}"})
+        if self._printer.get_dev_stat("extruder", "temperature") < 170:
+                    self._screen.show_popup_message(_("Low extrusion temp. Please heat up"))
+        else:
+            self._screen._ws.klippy.gcode_script(KlippyGcodes.EXTRUDE_REL)
+            self._screen._send_action(widget, "printer.gcode.script",
+                                    {"script": f"G1 E{direction}{self.distance} F{self.speed * 60}"})
 
     def load_unload(self, widget, direction):
         if direction == "-":
@@ -257,7 +260,10 @@ class Panel(ScreenPanel):
             if not self.load_filament:
                 self._screen.show_popup_message("Macro LOAD_FILAMENT not found")
             else:
-                self._screen._send_action(widget, "printer.gcode.script",
+                 if self._printer.get_dev_stat("extruder", "temperature") < 170:
+                    self._screen.show_popup_message(_("Low extrusion temp. Please heat up"))
+                else:     
+                    self._screen._send_action(widget, "printer.gcode.script",
                                           {"script": f"LOAD_FILAMENT SPEED={self.speed * 60}"})
 
     def enable_disable_fs(self, switch, gparams, name, x):
