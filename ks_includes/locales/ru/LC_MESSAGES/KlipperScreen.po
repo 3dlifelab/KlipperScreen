@@ -570,6 +570,9 @@ msgstr "Уровень Quad Gantry"
 msgid "Raise Nozzle"
 msgstr "Поднять сопло"
 
+msgid "Reboot"
+msgstr "Перезагрузить"
+
 msgid "Recover"
 msgstr "Восстановить"
 
