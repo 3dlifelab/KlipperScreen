@@ -55,7 +55,7 @@ class Panel(ScreenPanel):
         logging.info(f"Adding fan: {fan}")
         changeable = any(fan.startswith(x) or fan == x for x in CHANGEABLE_FANS)
         name = Gtk.Label()
-        fan_name = _("Part Fan") if fan == "fan" else (_("Chamber Fan") if fan == "fan_generic" else(_("Hotend Fan")))
+        fan_name = _("Part Fan") if fan == "fan" else (_("Chamber Fan") if fan == "fan_generic" else(_("Hotend Fan") if fan="heater_fan" else((_("Fan"))))
         name.set_markup(f"\n<big><b>{fan_name}</b></big>\n")
         name.set_hexpand(True)
         name.set_vexpand(True)
