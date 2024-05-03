@@ -16,6 +16,7 @@ from gi.repository import Gtk, Gdk, GLib, Pango
 from importlib import import_module
 from jinja2 import Environment
 from signal import SIGTERM
+from datetime import datetime
 
 from ks_includes import functions
 from ks_includes.KlippyWebsocket import KlippyWebsocket
@@ -24,6 +25,7 @@ from ks_includes.files import KlippyFiles
 from ks_includes.KlippyGtk import KlippyGtk
 from ks_includes.printer import Printer
 from ks_includes.widgets.keyboard import Keyboard
+from ks_includes.widgets.prompts import Prompt
 from ks_includes.config import KlipperScreenConfig
 from panels.base_panel import BasePanel
 
@@ -92,6 +94,9 @@ class KlipperScreen(Gtk.Window):
     initialized = initializing = False
     popup_timeout = None
     wayland = False
+    windowed = False
+    notification_log = []
+    prompt = None
 
     def __init__(self, args, version):
         try:
@@ -99,6 +104,7 @@ class KlipperScreen(Gtk.Window):
         except Exception as e:
             logging.exception(e)
             raise RuntimeError from e
+        GLib.set_prgname('KlipperScreen')
         self.blanking_time = 600
         self.use_dpms = True
         self.apiclient = None
@@ -106,6 +112,7 @@ class KlipperScreen(Gtk.Window):
         self.dialogs = []
         self.confirm = None
         self.panels_reinit = []
+        self.last_popup_time = datetime.now()
 
         configfile = os.path.normpath(os.path.expanduser(args.configfile))
 
