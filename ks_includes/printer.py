@@ -6,7 +6,7 @@ from gi.repository import GLib
 
 
 class Printer:
-    def __init__(self, state_cb, state_callbacks, busy_cb):
+    def __init__(self, state_cb, state_callbacks):
         self.config = {}
         self.data = {}
         self.state = "disconnected"
@@ -18,32 +18,31 @@ class Printer:
         self.extrudercount = 0
         self.tempdevcount = 0
         self.fancount = 0
+        self.ledcount = 0
         self.output_pin_count = 0
         self.store_timeout = None
         self.tempstore = {}
-        self.busy_cb = busy_cb
-        self.busy = False
         self.tempstore_size = 1200
         self.cameras = []
         self.available_commands = {}
         self.spoolman = False
+        self.temp_devices = self.sensors = None
 
     def reinit(self, printer_info, data):
         self.config = data['configfile']['config']
         self.data = data
-        self.devices = {}
-        self.tools = []
+        self.devices.clear()
+        self.tools.clear()
         self.extrudercount = 0
         self.tempdevcount = 0
         self.fancount = 0
+        self.ledcount = 0
         self.output_pin_count = 0
-        self.tempstore = {}
-        self.spoolman = False
-        self.busy = False
-        if not self.store_timeout:
-            self.store_timeout = GLib.timeout_add_seconds(1, self._update_temp_store)
+        self.tempstore.clear()
         self.tempstore_size = 1200
-        self.available_commands = {}
+        self.available_commands.clear()
+        self.temp_devices = self.sensors = None
+        self.stop_tempstore_updates()
 
         for x in self.config.keys():
             if x[:8] == "extruder":
@@ -89,6 +88,14 @@ class Printer:
                     r['points'] = [[float(j.strip()) for j in i.split(",")] for i in r['points'].strip().split("\n")]
                 except KeyError:
                     logging.debug(f"Couldn't load mesh {x}: {self.config[x]}")
+            if x.startswith('led') \
+                    or x.startswith('neopixel ') \
+                    or x.startswith('dotstar ') \
+                    or x.startswith('pca9533 ') \
+                    or x.startswith('pca9632 '):
+                name = x.split()[1] if len(x.split()) > 1 else x
+                if not name.startswith("_"):
+                    self.ledcount += 1
         self.process_update(data)
 
         logging.info(f"Klipper version: {printer_info['software_version']}")
@@ -96,18 +103,21 @@ class Printer:
         logging.info(f"# Temperature devices: {self.tempdevcount}")
         logging.info(f"# Fans: {self.fancount}")
         logging.info(f"# Output pins: {self.output_pin_count}")
+        logging.info(f"# Leds: {self.ledcount}")
+
+    def stop_tempstore_updates(self):
+        logging.info("Stopping tempstore")
+        if self.store_timeout is not None:
+            GLib.source_remove(self.store_timeout)
+            self.store_timeout = None
 
     def process_update(self, data):
         if self.data is None:
             return
-        for x in (self.get_temp_devices() + self.get_filament_sensors()):
-            if x in data:
-                for i in data[x]:
-                    self.set_dev_stat(x, i, data[x][i])
 
         for x in data:
-            if x == "configfile":
-                continue
+            if x == "configfile" and 'config' in data[x]:
+                self.config.update(data[x]['config'])
             if x not in self.data:
                 self.data[x] = {}
             self.data[x].update(data[x])
@@ -125,18 +135,10 @@ class Printer:
                 return "paused"
             if self.data['print_stats']['state'] == 'printing':
                 return "printing"
-            if self.data['idle_timeout']['state'].lower() == "printing":
-                return "busy"
         return self.data['webhooks']['state']
 
     def process_status_update(self):
         state = self.evaluate_state()
-        if state == "busy":
-            self.busy = True
-            return GLib.idle_add(self.busy_cb, True)
-        if self.busy:
-            self.busy = False
-            GLib.idle_add(self.busy_cb, False)
         if state != self.state:
             self.change_state(state)
         return False
@@ -153,7 +155,7 @@ class Printer:
             self.state = state
         if self.state_callbacks[state] is not None:
             logging.debug(f"Adding callback for state: {state}")
-            GLib.idle_add(self.state_cb, self.state_callbacks[state])
+            GLib.idle_add(self.state_cb, state, self.state_callbacks[state])
 
     def configure_power_devices(self, data):
         self.power_devices = {}
@@ -191,32 +193,41 @@ class Printer:
         fans = []
         if self.config_section_exists("fan"):
             fans.append("fan")
-        fan_types = ["controller_fan", "fan_generic", "heater_fan"]
-        for fan_type in fan_types:
+        for fan_type in ["controller_fan", "fan_generic", "heater_fan"]:
             fans.extend(iter(self.get_config_section_list(f"{fan_type} ")))
         return fans
 
     def get_output_pins(self):
-        output_pins = []
-        output_pins.extend(iter(self.get_config_section_list("output_pin ")))
-        return output_pins
+        return self.get_config_section_list("output_pin ")
 
     def get_gcode_macros(self):
-        return self.get_config_section_list("gcode_macro ")
+        macros = []
+        for macro in self.get_config_section_list("gcode_macro "):
+            macro = macro[12:].strip()
+            if macro.startswith("_") or macro.upper() in ('LOAD_FILAMENT', 'UNLOAD_FILAMENT'):
+                continue
+            if self.get_macro(macro) and "rename_existing" in self.get_macro(macro):
+                continue
+            macros.append(macro)
+        return macros
 
     def get_heaters(self):
-        heaters = []
+        heaters = self.get_config_section_list("heater_generic ")
         if "heater_bed" in self.devices:
-            heaters.append("heater_bed")
-        heaters.extend(iter(self.get_config_section_list("heater_generic ")))
-        heaters.extend(iter(self.get_config_section_list("temperature_sensor ")))
-        heaters.extend(iter(self.get_config_section_list("temperature_fan ")))
+            heaters.insert(0, "heater_bed")
         return heaters
 
+    def get_temp_fans(self):
+        return self.get_config_section_list("temperature_fan")
+
+    def get_temp_sensors(self):
+        return self.get_config_section_list("temperature_sensor")
+
     def get_filament_sensors(self):
-        sensors = list(self.get_config_section_list("filament_switch_sensor "))
-        sensors.extend(iter(self.get_config_section_list("filament_motion_sensor ")))
-        return sensors
+        if self.sensors is None:
+            self.sensors = list(self.get_config_section_list("filament_switch_sensor "))
+            self.sensors.extend(iter(self.get_config_section_list("filament_motion_sensor ")))
+        return self.sensors
 
     def get_probe(self):
         probe_types = ["probe", "bltouch", "smart_effector", "dockable_probe"]
@@ -227,31 +238,50 @@ class Printer:
         return None
 
     def get_printer_status_data(self):
-        data = {
+        return {
+            "moonraker": {
+                "power_devices": {"count": len(self.get_power_devices())},
+                "cameras": {"count": len(self.cameras)},
+                "spoolman": self.spoolman,
+            },
             "printer": {
+                "pause_resume": {"is_paused": self.state == "paused"},
                 "extruders": {"count": self.extrudercount},
                 "temperature_devices": {"count": self.tempdevcount},
                 "fans": {"count": self.fancount},
                 "output_pins": {"count": self.output_pin_count},
-                "gcode_macros": {"count": len(self.get_gcode_macros())},
-                "idle_timeout": self.get_stat("idle_timeout").copy(),
-                "pause_resume": {"is_paused": self.state == "paused"},
-                "power_devices": {"count": len(self.get_power_devices())},
-                "cameras": {"count": len(self.cameras)},
-                "spoolman": self.spoolman
+                "gcode_macros": {"count": len(self.get_gcode_macros()), "list": self.get_gcode_macros()},
+                "leds": {"count": self.ledcount},
+                "config_sections": [section for section in self.config.keys()],
             }
         }
 
-        sections = ["bed_mesh", "bltouch", "probe", "quad_gantry_level", "z_tilt"]
-        for section in sections:
-            if self.config_section_exists(section):
-                data["printer"][section] = self.get_config_section(section).copy()
+    def get_leds(self):
+        return [
+            led
+            for led_type in ["dotstar", "led", "neopixel", "pca9533", "pca9632"]
+            for led in self.get_config_section_list(f"{led_type} ")
+            if not led.split()[1].startswith("_")
+        ]
 
-        sections = ["firmware_retraction", "input_shaper", "bed_screws", "screws_tilt_adjust"]
-        for section in sections:
-            data["printer"][section] = self.config_section_exists(section)
-
-        return data
+    def get_led_color_order(self, led):
+        if led not in self.config or led not in self.data:
+            logging.debug(f"Error getting {led} config")
+            return None
+        elif "color_order" in self.config[led]:
+            return self.config[led]["color_order"]
+        colors = ''
+        for option in self.config[led]:
+            if option in ("red_pin", 'initial_RED') and 'R' not in colors:
+                colors += 'R'
+            elif option in ("green_pin", 'initial_GREEN') and 'G' not in colors:
+                colors += 'G'
+            elif option in ("blue_pin", 'initial_BLUE') and 'B' not in colors:
+                colors += 'B'
+            elif option in ("white_pin", 'initial_WHITE') and 'W' not in colors:
+                colors += 'W'
+        logging.debug(f"Colors in led: {colors}")
+        return colors
 
     def get_power_devices(self):
         return list(self.power_devices)
@@ -265,13 +295,9 @@ class Printer:
         if self.data is None or stat not in self.data:
             return {}
         if substat is not None:
-            return self.data[stat][substat] if substat in self.data[stat] else {}
-        return self.data[stat]
-
-    def get_dev_stat(self, dev, stat):
-        if dev in self.devices and stat in self.devices[dev]:
-            return self.devices[dev][stat]
-        return None
+            return self.data.get(stat, {}).get(substat, {})
+        else:
+            return self.data.get(stat, {})
 
     def get_fan_speed(self, fan="fan"):
         speed = 0
@@ -298,11 +324,13 @@ class Printer:
         return 0
 
     def get_temp_store_devices(self):
-        if self.tempstore is not None:
-            return list(self.tempstore)
+        return list(self.tempstore)
 
     def device_has_target(self, device):
-        return "target" in self.devices[device] or (device in self.tempstore and "targets" in self.tempstore[device])
+        return "target" in self.devices[device]
+
+    def device_has_power(self, device):
+        return "power" in self.devices[device]
 
     def get_temp_store(self, device, section=False, results=0):
         if device not in self.tempstore:
@@ -322,13 +350,18 @@ class Printer:
             temp[section] = self.tempstore[device][section][-results:]
         return temp
 
+    def get_tempstore_size(self):
+        return self.tempstore_size
+
     def get_temp_devices(self):
-        devices = [
-            device
-            for device in self.tools
-            if not device.startswith('extruder_stepper')
-        ]
-        return devices + self.get_heaters()
+        if self.temp_devices is None:
+            devices = [
+                device
+                for device in self.tools
+                if not device.startswith('extruder_stepper')
+            ]
+            self.temp_devices = devices + self.get_heaters() + self.get_temp_sensors() + self.get_temp_fans()
+        return self.temp_devices
 
     def get_tools(self):
         return self.tools
@@ -337,7 +370,7 @@ class Printer:
         return self.tools.index(tool)
 
     def init_temp_store(self, tempstore):
-        if self.tempstore and list(self.tempstore) != list(tempstore):
+        if self.tempstore and set(self.tempstore) != set(tempstore):
             logging.debug("Tempstore has changed")
             self.tempstore = tempstore
             self.change_state(self.state)
@@ -350,15 +383,11 @@ class Printer:
                     for _ in range(1, self.tempstore_size - length):
                         self.tempstore[device][x].insert(0, 0)
         logging.info(f"Temp store: {list(self.tempstore)}")
+        if not self.store_timeout:
+            self.store_timeout = GLib.timeout_add_seconds(1, self._update_temp_store)
 
     def config_section_exists(self, section):
         return section in self.get_config_section_list()
-
-    def set_dev_stat(self, dev, stat, value):
-        if dev not in self.devices:
-            return
-
-        self.devices[dev][stat] = value
 
     def _update_temp_store(self):
         if self.tempstore is None:
@@ -366,8 +395,9 @@ class Printer:
         for device in self.tempstore:
             for x in self.tempstore[device]:
                 self.tempstore[device][x].pop(0)
-                temp = self.get_dev_stat(device, x[:-1])
-                if temp is None:
+                temp = self.get_stat(device, x[:-1])
+                if not temp:
+                    # If the temperature is not available, set it to 0.
                     temp = 0
                 self.tempstore[device][x].append(temp)
         return True

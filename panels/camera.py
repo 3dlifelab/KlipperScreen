@@ -50,12 +50,15 @@ class Panel(ScreenPanel):
             logging.info("camera URL is relative")
             endpoint = self._screen.apiclient.endpoint.split(':')
             url = f"{endpoint[0]}:{endpoint[1]}{url}"
+        if '/webrtc' in url:
+            self._screen.show_popup_message(_('WebRTC is not supported by the backend trying Stream'))
+            url = url.replace('/webrtc', '/stream')
         vf = ""
         if cam["flip_horizontal"]:
             vf += "hflip,"
         if cam["flip_vertical"]:
             vf += "vflip,"
-        vf += f"rotate:{cam['rotation']*3.14159/180}"
+        vf += f"rotate:{cam['rotation'] * 3.14159 / 180}"
         logging.info(f"video filters: {vf}")
 
         if self.mpv:
@@ -93,5 +96,5 @@ class Panel(ScreenPanel):
 
     def log(self, loglevel, component, message):
         logging.debug(f'[{loglevel}] {component}: {message}')
-        if loglevel == 'error' and 'No Xvideo support found' not in message:
+        if loglevel == 'error' and 'No Xvideo support found' not in message and 'youtube-dl' not in message:
             self._screen.show_popup_message(f'{message}')

@@ -1,7 +1,4 @@
-import gi
-import json
 import logging
-import netifaces
 import os
 import gi
 
@@ -76,7 +73,6 @@ class Panel(ScreenPanel):
             self.labels['networkinfo'] = Gtk.Label()
             scroll.add(self.labels['networkinfo'])
             self.update_single_network_info()
-            self.timeout = GLib.timeout_add_seconds(5, self.update_single_network_info)
 
         self.labels['main_box'].pack_start(scroll, True, True, 0)
         self.content.add(self.labels['main_box'])
@@ -95,7 +91,6 @@ class Panel(ScreenPanel):
         if bssid in self.network_rows:
             logging.info(f"{bssid} already in list")
             return
-        ssid = ssid.strip()
 
         net = next(net for net in self.sdbus_nm.get_networks() if bssid == net['BSSID'])
         ssid = net['SSID']
@@ -186,16 +181,6 @@ class Panel(ScreenPanel):
             return True
         return False
 
-    def check_missing_networks(self):
-        networks = self._screen.wifi.get_networks()
-        for net in list(self.networks):
-            if net in networks:
-                networks.remove(net)
-
-        for net in networks:
-            self.add_network(net, False)
-        self.labels['networklist'].show_all()
-
     def close_add_network(self):
         if not self.show_add:
             return
@@ -208,18 +193,6 @@ class Panel(ScreenPanel):
             if i in self.labels:
                 del self.labels[i]
         self.show_add = False
-
-    def close_dialog(self, widget, response_id):
-        widget.destroy()
-
-    def connected_callback(self, ssid, prev_ssid):
-        logging.info("Now connected to a new network")
-        if ssid is not None:
-            self.remove_network(ssid)
-        if prev_ssid is not None:
-            self.remove_network(prev_ssid)
-
-        self.check_missing_networks()
 
     def connect_network(self, widget, ssid, showadd=True):
         self.deactivate()
@@ -247,7 +220,6 @@ class Panel(ScreenPanel):
         if self.show_add:
             return
 
-        _ = self.lang.gettext
         for child in self.content.get_children():
             self.content.remove(child)
 
@@ -273,7 +245,6 @@ class Panel(ScreenPanel):
         self.labels['add_network'].pack_start(box, True, True, 5)
 
         self.content.add(self.labels['add_network'])
-        self._screen.show_keyboard()
         self.labels['network_psk'].grab_focus_without_selecting()
         self.content.show_all()
         self.show_add = True

@@ -21,7 +21,7 @@ class Panel(ScreenPanel):
     def __init__(self, screen, title):
         super().__init__(screen, title)
         if self.ks_printer_cfg is not None:
-            bs = self.ks_printer_cfg.get("z_babystep_values", "0.01, 0.05")
+            bs = self.ks_printer_cfg.get("z_babystep_values", "")
             if re.match(r'^[0-9,\.\s]+$', bs):
                 bs = [str(i.strip()) for i in bs.split(',')]
                 if 1 < len(bs) < 3:
@@ -33,14 +33,9 @@ class Panel(ScreenPanel):
             self.labels[f"zdelta{i}"] = self._gtk.Button(label=i)
             self.labels[f"zdelta{i}"].connect("clicked", self.change_percent_delta, "z_offset", float(i))
             ctx = self.labels[f"zdelta{i}"].get_style_context()
-            if j == 0:
-                ctx.add_class("distbutton_top")
-            elif j == len(self.z_deltas) - 1:
-                ctx.add_class("distbutton_bottom")
-            else:
-                ctx.add_class("distbutton")
+            ctx.add_class("horizontal_togglebuttons")
             if i == self.z_delta:
-                ctx.add_class("distbutton_active")
+                ctx.add_class("horizontal_togglebuttons_active")
             zgrid.attach(self.labels[f"zdelta{i}"], j, 0, 1, 1)
 
         spdgrid = Gtk.Grid()
@@ -48,14 +43,9 @@ class Panel(ScreenPanel):
             self.labels[f"sdelta{i}"] = self._gtk.Button(label=f"{i}%")
             self.labels[f"sdelta{i}"].connect("clicked", self.change_percent_delta, "speed", int(i))
             ctx = self.labels[f"sdelta{i}"].get_style_context()
-            if j == 0:
-                ctx.add_class("distbutton_top")
-            elif j == len(self.speed_deltas) - 1:
-                ctx.add_class("distbutton_bottom")
-            else:
-                ctx.add_class("distbutton")
+            ctx.add_class("horizontal_togglebuttons")
             if i == self.s_delta:
-                ctx.add_class("distbutton_active")
+                ctx.add_class("horizontal_togglebuttons_active")
             spdgrid.attach(self.labels[f"sdelta{i}"], j, 0, 1, 1)
 
         extgrid = Gtk.Grid()
@@ -63,20 +53,14 @@ class Panel(ScreenPanel):
             self.labels[f"edelta{i}"] = self._gtk.Button(label=f"{i}%")
             self.labels[f"edelta{i}"].connect("clicked", self.change_percent_delta, "extrude", int(i))
             ctx = self.labels[f"edelta{i}"].get_style_context()
-            if j == 0:
-                ctx.add_class("distbutton_top")
-            elif j == len(self.extrude_deltas) - 1:
-                ctx.add_class("distbutton_bottom")
-            else:
-                ctx.add_class("distbutton")
+            ctx.add_class("horizontal_togglebuttons")
             if i == self.e_delta:
-                ctx.add_class("distbutton_active")
+                ctx.add_class("horizontal_togglebuttons_active")
             extgrid.attach(self.labels[f"edelta{i}"], j, 0, 1, 1)
-        grid = self._gtk.HomogeneousGrid()
-        grid.set_row_homogeneous(False)
+        grid = Gtk.Grid(column_homogeneous=True)
 
-        self.labels['z+'] = self._gtk.Button("arrow-down", "Z+", "color1")
-        self.labels['z-'] = self._gtk.Button("arrow-up", "Z-", "color1")
+        self.labels['z+'] = self._gtk.Button("z-farther", "Z+", "color1")
+        self.labels['z-'] = self._gtk.Button("z-closer", "Z-", "color1")
         self.labels['zoffset'] = self._gtk.Button("refresh", '  0.00' + _("mm"),
                                                   "color1", self.bts, Gtk.PositionType.LEFT, 1)
         self.labels['speed+'] = self._gtk.Button("speed+", _("Speed +"), "color3")
@@ -89,8 +73,8 @@ class Panel(ScreenPanel):
         self.labels['extrudefactor'] = self._gtk.Button("refresh", "  100%",
                                                         "color4", self.bts, Gtk.PositionType.LEFT, 1)
         if self._screen.vertical_mode:
-            grid.attach(self.labels['z-'], 1, 0, 1, 1)
             grid.attach(self.labels['z+'], 0, 0, 1, 1)
+            grid.attach(self.labels['z-'], 1, 0, 1, 1)
             grid.attach(self.labels['zoffset'], 2, 0, 1, 1)
             grid.attach(zgrid, 0, 1, 3, 1)
             grid.attach(self.labels['speed-'], 0, 2, 1, 1)
@@ -103,8 +87,8 @@ class Panel(ScreenPanel):
             grid.attach(extgrid, 0, 5, 3, 1)
         else:
             grid.attach(self.labels['zoffset'], 0, 0, 1, 1)
-            grid.attach(self.labels['z-'], 0, 1, 1, 1)
-            grid.attach(self.labels['z+'], 0, 2, 1, 1)
+            grid.attach(self.labels['z+'], 0, 1, 1, 1)
+            grid.attach(self.labels['z-'], 0, 2, 1, 1)
             grid.attach(zgrid, 0, 3, 1, 1)
             grid.attach(self.labels['speedfactor'], 1, 0, 1, 1)
             grid.attach(self.labels['speed+'], 1, 1, 1, 1)
@@ -180,13 +164,13 @@ class Panel(ScreenPanel):
 
     def change_percent_delta(self, widget, array, delta):
         logging.info(f"### Delta {delta}")
-        widget.get_style_context().add_class("distbutton_active")
         if array == "z_offset":
-            self.labels[f"zdelta{self.z_delta}"].get_style_context().remove_class("distbutton_active")
+            self.labels[f"zdelta{self.z_delta}"].get_style_context().remove_class("horizontal_togglebuttons_active")
             self.z_delta = delta
         elif array == "speed":
-            self.labels[f"sdelta{self.s_delta}"].get_style_context().remove_class("distbutton_active")
+            self.labels[f"sdelta{self.s_delta}"].get_style_context().remove_class("horizontal_togglebuttons_active")
             self.s_delta = delta
         elif array == "extrude":
-            self.labels[f"edelta{self.e_delta}"].get_style_context().remove_class("distbutton_active")
+            self.labels[f"edelta{self.e_delta}"].get_style_context().remove_class("horizontal_togglebuttons_active")
             self.e_delta = delta
+        widget.get_style_context().add_class("horizontal_togglebuttons_active")
